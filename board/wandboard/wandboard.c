@@ -47,9 +47,9 @@ DECLARE_GLOBAL_DATA_PTR;
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS |	\
 	PAD_CTL_ODE | PAD_CTL_SRE_FAST)
 
-#define USDHC1_CD_GPIO		IMX_GPIO_NR(1, 2)
-#define USDHC3_CD_GPIO		IMX_GPIO_NR(3, 9)
-#define ETH_PHY_RESET		IMX_GPIO_NR(3, 29)
+//#define USDHC1_CD_GPIO		IMX_GPIO_NR(1, 2)
+//#define USDHC3_CD_GPIO		IMX_GPIO_NR(3, 9)
+//#define ETH_PHY_RESET		IMX_GPIO_NR(3, 29)
 
 int dram_init(void)
 {
@@ -71,20 +71,26 @@ static iomux_v3_cfg_t const usdhc1_pads[] = {
 	MX6_PAD_SD1_DAT2__SD1_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD1_DAT3__SD1_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	/* Carrier MicroSD Card Detect */
-	MX6_PAD_GPIO_2__GPIO1_IO02      | MUX_PAD_CTRL(NO_PAD_CTRL),
+	/*MX6_PAD_GPIO_2__GPIO1_IO02      | MUX_PAD_CTRL(NO_PAD_CTRL),*/
 };
 
 static iomux_v3_cfg_t const usdhc3_pads[] = {
-	MX6_PAD_SD3_CLK__SD3_CLK   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_SD3_CMD__SD3_CMD   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_CLK__SD3_CLK    | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_CMD__SD3_CMD    | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT0__SD3_DATA0 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT1__SD3_DATA1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT2__SD3_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT3__SD3_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_DAT4__SD3_DATA4 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_DAT5__SD3_DATA5 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_DAT6__SD3_DATA6 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_DAT7__SD3_DATA7 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD3_RST__SD3_RST    | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	/* SOM MicroSD Card Detect */
-	MX6_PAD_EIM_DA9__GPIO3_IO09     | MUX_PAD_CTRL(NO_PAD_CTRL),
+	//MX6_PAD_EIM_DA9__GPIO3_IO09     | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
 
+#if 0
 static iomux_v3_cfg_t const enet_pads[] = {
 	MX6_PAD_ENET_MDIO__ENET_MDIO		| MUX_PAD_CTRL(ENET_PAD_CTRL),
 	MX6_PAD_ENET_MDC__ENET_MDC		| MUX_PAD_CTRL(ENET_PAD_CTRL),
@@ -104,12 +110,14 @@ static iomux_v3_cfg_t const enet_pads[] = {
 	/* AR8031 PHY Reset */
 	MX6_PAD_EIM_D29__GPIO3_IO29		| MUX_PAD_CTRL(NO_PAD_CTRL),
 };
+#endif
 
 static void setup_iomux_uart(void)
 {
 	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
 }
 
+#if 0
 static void setup_iomux_enet(void)
 {
 	imx_iomux_v3_setup_multiple_pads(enet_pads, ARRAY_SIZE(enet_pads));
@@ -119,10 +127,21 @@ static void setup_iomux_enet(void)
 	udelay(500);
 	gpio_set_value(ETH_PHY_RESET, 1);
 }
+#endif
 
+#if 0
 static struct fsl_esdhc_cfg usdhc_cfg[2] = {
 	{USDHC3_BASE_ADDR},
 	{USDHC1_BASE_ADDR},
+};
+#endif
+
+static struct fsl_esdhc_cfg usdhc1_cfg = {
+	USDHC1_BASE_ADDR
+};
+
+static struct fsl_esdhc_cfg usdhc3_cfg = {
+	USDHC3_BASE_ADDR
 };
 
 int board_mmc_getcd(struct mmc *mmc)
@@ -132,10 +151,16 @@ int board_mmc_getcd(struct mmc *mmc)
 
 	switch (cfg->esdhc_base) {
 	case USDHC1_BASE_ADDR:
-		ret = !gpio_get_value(USDHC1_CD_GPIO);
+		//ret = !gpio_get_value(USDHC1_CD_GPIO);
+		/* ret = 1 means that card is always present.*/
+		/* ret = 0 means that card is absent.*/
+		ret = 1;
 		break;
 	case USDHC3_BASE_ADDR:
-		ret = !gpio_get_value(USDHC3_CD_GPIO);
+		//ret = !gpio_get_value(USDHC3_CD_GPIO);
+		ret = 1;
+		break;
+	default:
 		break;
 	}
 
@@ -144,9 +169,9 @@ int board_mmc_getcd(struct mmc *mmc)
 
 int board_mmc_init(bd_t *bis)
 {
-	int ret;
-	u32 index = 0;
-
+	int ret = 0;
+	//u32 index = 0;
+#if 0
 	/*
 	 * Following map is done:
 	 * (U-boot device node)    (Physical Port)
@@ -180,10 +205,27 @@ int board_mmc_init(bd_t *bis)
 		if (ret)
 			return ret;
 	}
+#endif
+	/* init usd1 - ext microsd.*/
+	imx_iomux_v3_setup_multiple_pads(
+					usdhc1_pads, ARRAY_SIZE(usdhc1_pads));
+	usdhc1_cfg.sdhc_clk 		= mxc_get_clock(MXC_ESDHC_CLK);
+	usdhc1_cfg.max_bus_width 	= 4;
 
-	return 0;
+	/* init usd3 emmc onboard.*/
+	imx_iomux_v3_setup_multiple_pads(
+					usdhc3_pads, ARRAY_SIZE(usdhc3_pads));
+	usdhc3_cfg.sdhc_clk 	 = mxc_get_clock(MXC_ESDHC3_CLK);
+	usdhc3_cfg.max_bus_width = 8;
+
+	/* register sd interfaces in right order.*/
+	ret |= fsl_esdhc_initialize(bis, &usdhc1_cfg);
+	ret |= fsl_esdhc_initialize(bis, &usdhc3_cfg);
+
+	return ret;
 }
 
+#if 0
 static int mx6_rgmii_rework(struct phy_device *phydev)
 {
 	unsigned short val;
@@ -206,7 +248,9 @@ static int mx6_rgmii_rework(struct phy_device *phydev)
 
 	return 0;
 }
+#endif
 
+#if 0
 int board_phy_config(struct phy_device *phydev)
 {
 	mx6_rgmii_rework(phydev);
@@ -216,6 +260,7 @@ int board_phy_config(struct phy_device *phydev)
 
 	return 0;
 }
+#endif
 
 #if defined(CONFIG_VIDEO_IPUV3)
 struct i2c_pads_info i2c2_pad_info = {
@@ -351,12 +396,14 @@ static void setup_display(void)
 }
 #endif /* CONFIG_VIDEO_IPUV3 */
 
+#if 0
 int board_eth_init(bd_t *bis)
 {
 	setup_iomux_enet();
 
 	return cpu_eth_init(bis);
 }
+#endif
 
 int board_early_init_f(void)
 {
@@ -399,7 +446,7 @@ int board_init(void)
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
 
-	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c2_pad_info);
+	//setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c2_pad_info);
 
 	return 0;
 }
