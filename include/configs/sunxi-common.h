@@ -174,6 +174,7 @@
 
 #define CONFIG_SYS_MONITOR_LEN		(768 << 10)	/* 768 KiB */
 #define CONFIG_IDENT_STRING		" Allwinner Technology"
+#define CONFIG_DISPLAY_BOARDINFO
 
 #define CONFIG_ENV_OFFSET		(544 << 10) /* (8 + 24 + 512) KiB */
 #define CONFIG_ENV_SIZE			(128 << 10)	/* 128 KiB */
@@ -296,11 +297,6 @@ extern int soft_i2c_gpio_scl;
 /* stop x86 thinking in cfbconsole from trying to init a pc keyboard */
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 
-/* To be able to hook simplefb into dt */
-#ifdef CONFIG_VIDEO_DT_SIMPLEFB
-#define CONFIG_OF_BOARD_SETUP
-#endif
-
 #endif /* CONFIG_VIDEO */
 
 /* Ethernet support */
@@ -314,6 +310,7 @@ extern int soft_i2c_gpio_scl;
 #define CONFIG_PHY_GIGE			/* GMAC can use gigabit PHY	*/
 #define CONFIG_PHY_ADDR		1
 #define CONFIG_MII			/* MII PHY management		*/
+#define CONFIG_PHY_REALTEK
 #endif
 
 #ifdef CONFIG_USB_EHCI_HCD
@@ -328,7 +325,6 @@ extern int soft_i2c_gpio_scl;
 #endif
 
 #ifdef CONFIG_USB_MUSB_GADGET
-#define CONFIG_USB_GADGET
 #define CONFIG_USB_GADGET_DUALSPEED
 #define CONFIG_USB_GADGET_VBUS_DRAW	0
 

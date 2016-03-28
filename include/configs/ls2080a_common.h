@@ -44,15 +44,6 @@
 #define CONFIG_SKIP_LOWLEVEL_INIT
 #define CONFIG_BOARD_EARLY_INIT_F	1
 
-/* Flat Device Tree Definitions */
-#define CONFIG_OF_LIBFDT
-#define CONFIG_OF_BOARD_SETUP
-#define CONFIG_OF_STDOUT_VIA_ALIAS
-
-/* new uImage format support */
-#define CONFIG_FIT
-#define CONFIG_FIT_VERBOSE	/* enable fit_format_{error,warning}() */
-
 #ifndef CONFIG_SPL
 #define CONFIG_FSL_DDR_INTERACTIVE	/* Interactive debugging */
 #endif
@@ -269,7 +260,7 @@ unsigned long long get_qixis_addr(void);
 	" 0x580800000 \0"
 
 #define CONFIG_BOOTARGS		"console=ttyS0,115200 root=/dev/ram0 " \
-				"earlycon=uart8250,mmio,0x21c0500" \
+				"earlycon=uart8250,mmio,0x21c0500 " \
 				"ramdisk_size=0x2000000 default_hugepagesz=2m" \
 				" hugepagesz=2m hugepages=256"
 #define CONFIG_BOOTCOMMAND	"fsl_mc apply dpl 0x580700000 &&" \

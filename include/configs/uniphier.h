@@ -18,11 +18,6 @@
 #define CONFIG_SYS_NS16550_REG_SIZE	-2
 #endif
 
-/* TODO: move to Kconfig and device tree */
-#if 0
-#define CONFIG_SYS_NS16550_SERIAL
-#endif
-
 #define CONFIG_SMC911X
 
 /* dummy: referenced by examples/standalone/smc911x_eeprom.c */
@@ -39,7 +34,7 @@
 
 #define CONFIG_SYS_CACHELINE_SIZE	32
 
-/* Comment out the following to enable L2 cache */
+/* Comment out the following to disable L2 cache */
 #define CONFIG_UNIPHIER_L2CACHE_ON
 
 #define CONFIG_DISPLAY_CPUINFO
@@ -66,6 +61,7 @@
 
 #define CONFIG_SYS_MAX_FLASH_SECT	256
 #define CONFIG_SYS_MONITOR_BASE		0
+#define CONFIG_SYS_MONITOR_LEN		0x00080000	/* 512KB */
 #define CONFIG_SYS_FLASH_BASE		0
 
 /*
@@ -126,7 +122,7 @@
 
 #define CONFIG_NAND_DENALI_ECC_SIZE			1024
 
-#ifdef CONFIG_ARCH_UNIPHIER_PH1_SLD3
+#ifdef CONFIG_ARCH_UNIPHIER_SLD3
 #define CONFIG_SYS_NAND_REGS_BASE			0xf8100000
 #define CONFIG_SYS_NAND_DATA_BASE			0xf8000000
 #else
@@ -238,26 +234,22 @@
 		"mmc erase 0 800 &&"				\
 		"tftpboot u-boot-spl.bin &&"			\
 		"mmc write $loadaddr 0 80 &&"			\
-		"tftpboot u-boot.img &&"			\
+		"tftpboot u-boot.bin &&"			\
 		"mmc write $loadaddr 80 780\0"			\
 	"nandupdate=nand erase 0 0x00100000 &&"			\
 		"tftpboot u-boot-spl.bin &&"			\
 		"nand write $loadaddr 0 0x00010000 &&"		\
-		"tftpboot u-boot.img &&"			\
+		"tftpboot u-boot.bin &&"			\
 		"nand write $loadaddr 0x00010000 0x000f0000\0"	\
 	LINUXBOOT_ENV_SETTINGS
 
 #define CONFIG_SYS_BOOTMAPSZ			0x20000000
 
-/* Open Firmware flat tree */
-#define CONFIG_OF_LIBFDT
-
 #define CONFIG_SYS_SDRAM_BASE		0x80000000
 #define CONFIG_NR_DRAM_BANKS		2
 
-#if defined(CONFIG_ARCH_UNIPHIER_PH1_SLD3) || \
-	defined(CONFIG_ARCH_UNIPHIER_PH1_LD4) || \
-	defined(CONFIG_ARCH_UNIPHIER_PH1_SLD8)
+#if defined(CONFIG_ARCH_UNIPHIER_SLD3) || defined(CONFIG_ARCH_UNIPHIER_LD4) || \
+	defined(CONFIG_ARCH_UNIPHIER_SLD8)
 #define CONFIG_SPL_TEXT_BASE		0x00040000
 #else
 #define CONFIG_SPL_TEXT_BASE		0x00100000
@@ -270,6 +262,7 @@
 
 #define CONFIG_SPL_FRAMEWORK
 #define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_NOR_SUPPORT
 #define CONFIG_SPL_NAND_SUPPORT
 #define CONFIG_SPL_MMC_SUPPORT
 
@@ -279,8 +272,12 @@
 #define CONFIG_SPL_BOARD_INIT
 
 #define CONFIG_SYS_NAND_U_BOOT_OFFS		0x10000
+
+/* subtract sizeof(struct image_header) */
+#define CONFIG_SYS_UBOOT_BASE			(0x60000 - 0x40)
 #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x80
 
+#define CONFIG_SPL_TARGET			"u-boot-with-spl.bin"
 #define CONFIG_SPL_MAX_FOOTPRINT		0x10000
 
 #endif /* __CONFIG_UNIPHIER_COMMON_H__ */
